@@ -1,41 +1,79 @@
-📊 Dashboard KPI – UKM Bhakti Karya Mahasiswa (BKM) 2025/2026
+# 📊 KPI Dashboard – UKM Bhakti Karya Mahasiswa (BKM) 2025/2026
 
-A web-based dashboard designed to monitor, analyze, and manage organizational performance through Key Performance Indicators (KPI) in a structured and interactive way.
+## 🧩 The Problem
 
-This system helps organizations track progress across departments, evaluate performance achievements, and make data-driven decisions efficiently.
+Performance evaluation should provide clarity — but in reality, it often creates confusion.
 
-🚀 Key Features
-📈 Real-time KPI Monitoring
-Visualize performance data across departments with dynamic charts and statistics.
-🧩 Department-Based Management
-Organize KPI data by divisions such as Sekretaris Umum, Litbang, Humas, Kesehatan, and others.
-📊 Interactive Data Visualization
-Integrated charts (bar, pie, and line) powered by Chart.js for better insights.
-➕ CRUD KPI & Department
-Easily add, edit, and delete KPI data and departments through a user-friendly interface.
-📂 Excel Integration
-Import and export KPI data using Excel format for flexibility and reporting needs.
-📌 Performance Status Tracking
-Automatically classify KPI as “Berhasil” or “Gagal” based on achievement percentage.
-🛠️ Tech Stack
-Frontend: HTML, CSS, JavaScript
-Libraries: Chart.js, SheetJS (XLSX)
-UI Design: Responsive dashboard with modern layout and clean visualization
-🎯 Project Purpose
+In UKM BKM, KPI tracking was handled using spreadsheets and separated files across departments. While this approach worked on a basic level, it introduced deeper issues:
 
-This project was developed to address challenges in managing KPI data that are often scattered, manual, and difficult to evaluate. By centralizing data into a single dashboard, the system improves:
+- KPI data was fragmented and difficult to consolidate  
+- Performance tracking required repetitive manual calculations  
+- No clear visualization to quickly understand progress  
+- Hard to identify which departments were underperforming  
+- Evaluation results were not instantly actionable  
 
-Data transparency
-Performance evaluation accuracy
-Decision-making efficiency
-💡 Highlights
-Designed with a data-driven approach to support organizational evaluation
-Built with scalable structure for future integration (e.g., backend or database)
-Focused on usability and clarity, making it accessible for non-technical users
-📌 Use Case
-Student organizations (UKM)
-Internal performance monitoring systems
-Small-to-medium team management dashboards
-👩‍💻 Author
+Instead of supporting decision-making, the system slowed it down.
 
-Developed by a Business Information Systems student with a strong interest in UI/UX Design, Data Visualization, and Frontend Development.
+---
+
+## 💡 The Solution
+
+To address this, I developed a **web-based KPI Dashboard** that transforms scattered data into a centralized, visual, and interactive system.
+
+The goal was not just to “display data”, but to **make performance understandable at a glance**.
+
+Key capabilities include:
+
+- 📈 **Real-time Performance Overview**  
+  Monitor KPI achievements across all departments in one unified dashboard  
+
+- 🧩 **Structured KPI Management**  
+  Organize and manage KPI data by division (Sekretaris Umum, Litbang, Humas, etc.)  
+
+- 📊 **Visual Analytics**  
+  Convert raw data into meaningful insights using interactive charts (bar, pie, line)  
+
+- ⚙️ **Full Data Control (CRUD)**  
+  Simplify data management without relying on complex tools  
+
+- 📂 **Excel Integration**  
+  Allow seamless data import/export for reporting and operational flexibility  
+
+- 📌 **Automated Evaluation**  
+  Instantly classify KPI results into *Berhasil* or *Gagal* based on performance  
+
+The system is designed with a focus on **usability and clarity**, ensuring it can be used effectively even by non-technical users.
+
+---
+
+## 🚀 The Impact
+
+By shifting from manual tracking to a visual dashboard, this project changes how performance is managed:
+
+- **From scattered → centralized**  
+  All KPI data is accessible in one platform  
+
+- **From manual → automated**  
+  Reduces repetitive calculations and human error  
+
+- **From unclear → visual insight**  
+  Performance trends can be understood instantly  
+
+- **From reactive → data-driven decisions**  
+  Leaders can identify issues earlier and act faster  
+
+This project highlights how a simple digital solution can significantly improve **transparency, efficiency, and decision-making quality** within an organization.
+
+---
+
+## 🛠️ Tech Stack
+
+- HTML, CSS, JavaScript  
+- Chart.js (Data Visualization)  
+- SheetJS / XLSX (Excel Integration)
+
+---
+
+## 👩‍💻 Author
+
+Developed by a Business Information Systems student with a strong interest in **UI/UX Design, Data Visualization, and Frontend Development**.
