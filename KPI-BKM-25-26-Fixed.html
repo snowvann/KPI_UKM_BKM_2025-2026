@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard KPI - UKM BKM Periode 2025/2026</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2C5F8D;
+            --primary-red: #DC2626;
+            --primary-yellow: #EAB308;
+            --secondary-blue: #3B82F6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --dark-blue: #1E3A5F;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #F5F7FA;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+            transition: width 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .sidebar.closed {
+            width: 0;
+        }
+
+        .sidebar-content {
+            padding: 2rem 1.5rem;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .logo-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .logo-circle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-yellow) 100%);
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .logo-text {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--dark-blue);
+        }
+
+        .section-title {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .dept-list {
+            margin-bottom: 1.5rem;
+        }
+
+        .dept-btn {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            background: transparent;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dept-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .dept-btn.active {
+            background: rgba(255,255,255,0.15);
+            font-weight: 600;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-blue {
+            background-color: var(--secondary-blue);
+        }
+
+        .btn-green {
+            background-color: var(--success);
+        }
+
+        .btn-yellow {
+            background-color: var(--warning);
+        }
+
+        .btn-red {
+            background-color: var(--danger);
+        }
+
+        .btn-gray {
+            background-color: var(--gray-500);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-red) 50%, var(--secondary-blue) 100%);
+            padding: 2rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-toggle {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .header-subtitle {
+            margin: 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--dark-blue);
+        }
+
+        .stat-card.blue-light {
+            border-top-color: var(--secondary-blue);
+        }
+
+        .stat-card.blue-dark {
+            border-top-color: var(--dark-blue);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-value.blue-light {
+            color: var(--secondary-blue);
+        }
+
+        .stat-value.blue-dark {
+            color: var(--dark-blue);
+        }
+
+        /* Charts */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(153, 73, 121, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .chart-title {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Forms */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border: 2px solid var(--secondary-blue);
+        }
+
+        .form-container.green {
+            border-color: var(--success);
+        }
+
+        .form-title {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Table */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        th {
+            background: var(--dark-blue);
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.85rem;
+        }
+
+        .progress-bar {
+            background: var(--gray-200);
+            border-radius: 999px;
+            height: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            background: var(--success);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.failed {
+            background: var(--danger);
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .action-icon {
+            border: none;
+            border-radius: 6px;
+            padding: 0.4rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-edit {
+            background: var(--warning);
+            color: white;
+        }
+
+        .icon-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Notes */
+        .notes-container {
+            margin-top: 2rem;
+        }
+
+        .notes-title {
+            margin: 0 0 1rem 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .note-item {
+            background: var(--gray-100);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--success);
+        }
+
+        .note-item.failed {
+            border-left-color: var(--danger);
+        }
+
+        .note-kpi {
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .note-text {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.85rem;
+            color: var(--gray-700);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            color: var(--dark-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                z-index: 100;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-content">
+                <!-- Logo -->
+                <div class="logo-container">
+                    <div class="logo-circle">BKM</div>
+                    <div class="logo-text">UKM BKM 2025/2026</div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="section-title">BPH & Departemen</div>
+                <div class="dept-list" id="deptList">
+                    <!-- Departments will be loaded here -->
+                </div>
+
+                <!-- Action Buttons -->
+                <button class="action-btn btn-blue" id="addDeptBtn">
+                    <i class="fas fa-plus"></i> Tambah Departemen
+                </button>
+                <button class="action-btn btn-green" id="addKPIBtn">
+                    <i class="fas fa-chart-bar"></i> Tambah KPI Baru
+                </button>
+                <label class="action-btn btn-yellow">
+                    <i class="fas fa-upload"></i> Upload Data Excel
+                    <input type="file" id="excelUpload" accept=".xlsx,.xls" style="display: none;">
+                </label>
+                <button class="action-btn btn-blue" id="downloadExcelBtn">
+                    <i class="fas fa-download"></i> Download Data Excel
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-content">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1>Dashboard KPI - UKM Bhakti Karya Mahasiswa</h1>
+                </div>
+                <p class="header-subtitle">Monitoring Kinerja Organisasi Periode 2025/2026</p>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card blue-dark">
+                        <div class="stat-label">Rata-rata Pencapaian</div>
+                        <div class="stat-value blue-dark" id="avgAchievement">0%</div>
+                    </div>
+                    <div class="stat-card blue-light">
+                        <div class="stat-label">Jumlah KPI</div>
+                        <div class="stat-value blue-light" id="totalKPI">0</div>
+                    </div>
+                    <div class="stat-card blue-dark">
+                        <div class="stat-label">KPI Berhasil</div>
+                        <div class="stat-value blue-dark" id="successKPI">0</div>
+                    </div>
+                    <div class="stat-card blue-light">
+                        <div class="stat-label">KPI Gagal</div>
+                        <div class="stat-value blue-light" id="failedKPI">0</div>
+                    </div>
+                </div>
+
+                <!-- Overall Performance Chart -->
+                <div class="chart-container">
+                    <h3 class="chart-title">Performa Keseluruhan</h3>
+                    <div style="height: 300px;">
+                        <canvas id="overallChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Status & Distribution Charts -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3 class="chart-title">Status Pencapaian</h3>
+                        <div style="height: 250px;">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <h3 class="chart-title">Distribusi Persentase Pencapaian</h3>
+                        <div style="height: 250px;">
+                            <canvas id="distributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Department Form (Hidden by default) -->
+                <div class="form-container" id="addDeptForm" style="display: none;">
+                    <h3 class="form-title">Tambah Departemen Baru</h3>
+                    <input type="text" class="form-input" id="deptNameInput" placeholder="Nama Departemen">
+                    <div class="form-actions">
+                        <button class="action-btn btn-green" id="saveDeptBtn">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                        <button class="action-btn btn-gray" id="cancelDeptBtn">
+                            <i class="fas fa-times"></i> Batal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add KPI Form (Hidden by default) -->
+                <div class="form-container green" id="addKPIForm" style="display: none;">
+                    <h3 class="form-title" id="kpiFormTitle">Tambah KPI Baru</h3>
+                    <input type="text" class="form-input" id="kpiNameInput" placeholder="Nama KPI">
+                    <input type="text" class="form-input" id="kpiTargetInput" placeholder="Target">
+                    <input type="text" class="form-input" id="kpiMethodInput" placeholder="Metode Pengukuran">
+                    <input type="number" class="form-input" id="kpiPercentageInput" placeholder="Persentase (0-100)" min="0" max="100">
+                    <textarea class="form-textarea" id="kpiNoteInput" placeholder="Keterangan (opsional)"></textarea>
+                    <div class="form-actions">
+                        <button class="action-btn btn-green" id="saveKPIBtn">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                        <button class="action-btn btn-gray" id="cancelKPIBtn">
+                            <i class="fas fa-times"></i> Batal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Department KPI Table -->
+                <div class="table-container" id="kpiTableContainer">
+                    <div class="table-header">
+                        <h3 class="table-title" id="deptTableTitle">Performa Sekretaris Umum</h3>
+                        <button class="action-btn btn-red" id="deleteDeptBtn">
+                            <i class="fas fa-trash"></i> Hapus Departemen
+                        </button>
+                    </div>
+
+                    <!-- Department Chart -->
+                    <div style="margin-bottom: 2rem; height: 250px;">
+                        <canvas id="deptChart"></canvas>
+                    </div>
+
+                    <!-- Table -->
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Key Performance Indicator</th>
+                                    <th>Target</th>
+                                    <th>Metode Pengukuran</th>
+                                    <th style="text-align: center;">Perencanaan</th>
+                                    <th style="text-align: center;">Pelaksanaan</th>
+                                    <th style="text-align: center;">Persentase</th>
+                                    <th style="text-align: center;">Status</th>
+                                    <th style="text-align: center;">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="kpiTableBody">
+                                <!-- KPI data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="notes-container" id="notesContainer">
+                        <h4 class="notes-title">Keterangan Detail:</h4>
+                        <!-- Notes will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Excel Upload -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h3 class="modal-title">Upload Data Excel</h3>
+            <p>Fitur upload Excel akan memproses file Excel dengan struktur kolom yang sesuai.</p>
+            <div style="margin: 1.5rem 0;">
+                <input type="file" id="excelFileInput" accept=".xlsx,.xls" class="form-input">
+            </div>
+            <div class="form-actions">
+                <button class="action-btn btn-green" id="processExcelBtn">
+                    <i class="fas fa-check"></i> Proses File
+                </button>
+                <button class="action-btn btn-gray" id="closeUploadModal">
+                    <i class="fas fa-times"></i> Batal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data from the original React component
+        const initialData = {
+            'Sekretaris Umum': [
+                { no: 1, kpi: 'General Time Schedule', target: '0.8', metodePengukuran: 'Cross check General Time Schedule dengan realisasi', programKerja: 'Pertolongan Pertama 1', persentase: 1.0, status: 'Berhasil', keterangan: 'Terjadi penyesuaian jadwal pelaksanaan menyesuaikan kondisi teknis' },
+                { no: 2, kpi: 'Jumlah Rapat Koordinasi', target: '0.95', metodePengukuran: 'Rekap jadwal vs realisasi rakor', programKerja: 'Pertolongan Pertama 1', persentase: 0.9748, status: 'Berhasil', keterangan: 'Koordinasi berjalan baik' },
+                { no: 3, kpi: 'Pelaporan Pertanggungjawaban', target: '1', metodePengukuran: 'Dokumen LPJ yang disahkan', programKerja: 'Departemen Humas', persentase: 1.0, status: 'Berhasil', keterangan: 'LPJ selesai' },
+                { no: 4, kpi: 'Rekapitulasi Persentase KPI', target: '1', metodePengukuran: 'Rekapitulasi capaian setiap KPI', programKerja: 'Departemen Humas', persentase: 1.0, status: 'Berhasil', keterangan: 'Rekapitulasi selesai' },
+                { no: 5, kpi: 'Membuat plan keberhasilan proposal', target: 'Minimal 85% plan tercapai per triwulan', metodePengukuran: 'Membuat form plan bentuk pengajuan proposal sponsorship', programKerja: 'Dana Usaha', persentase: 0.0, status: 'Gagal', keterangan: 'Program kerja belum terealisasi karena belum terbentuknya pandangan dan kerangka kerja yang jelas' }
+            ],
+            'Litbang': [
+                { no: 1, kpi: 'Identifikasi Masalah Internal', target: 'Minimal 5 temuan per semester', metodePengukuran: 'Laporan hasil riset dan rekap masalah', areaKerja: 'Penelitian', perencanaan: 5, pelaksanaan: 3, persentase: 0.6, status: 'Gagal' },
+                { no: 2, kpi: 'Rekomendasi Pengembangan Organisasi', target: 'Minimal 4 rekomendasi per kuartal', metodePengukuran: 'Menghitung jumlah rekomendasi yang diajukan dalam laporan Litbang', areaKerja: 'Penelitian', perencanaan: 4, pelaksanaan: 2, persentase: 0.5, status: 'Gagal' },
+                { no: 3, kpi: 'Implementasi Rekomendasi Litbang', target: 'Minimal 75% rekomendasi diimplementasikan', metodePengukuran: 'Membagi jumlah rekomendasi yang diimplementasikan dengan total rekomendasi', areaKerja: 'Pengembangan', perencanaan: 4, pelaksanaan: 2, persentase: 0.5, status: 'Gagal' },
+                { no: 4, kpi: 'Penyelesaian Masalah Internal', target: 'Minimal 70% masalah selesai', metodePengukuran: 'Membagi jumlah masalah yang terselesaikan dengan total masalah', areaKerja: 'Pengembangan', perencanaan: 1, pelaksanaan: 1, persentase: 1.0, status: 'Berhasil' },
+                { no: 5, kpi: 'Agenda sharing alumni', target: '4 kali dalam 1 periode', metodePengukuran: 'Membagi jumlah anggota hadir dengan total anggota', areaKerja: 'Pengembangan', perencanaan: 4, pelaksanaan: 4, persentase: 1.0, status: 'Berhasil' },
+                { no: 6, kpi: 'Evaluasi KPI Pasca Kegiatan', target: '100% kegiatan dievaluasi', metodePengukuran: 'Laporan evaluasi pasca kegiatan', areaKerja: 'Penelitian', perencanaan: 13, pelaksanaan: 13, persentase: 1.0, status: 'Berhasil' },
+                { no: 7, kpi: 'Evaluasi KPI BPH', target: 'Minimal 2 kali evaluasi BPH per periode', metodePengukuran: 'Laporan hasil evaluasi', areaKerja: 'Penelitian', perencanaan: 2, pelaksanaan: 1, persentase: 0.5, status: 'Gagal' },
+                { no: 8, kpi: 'Penyaluran Saran & Kritik OC ke SC', target: 'Jika 30 kritik maka 100%, jika 20 maka 50%', metodePengukuran: 'Rekap laporan masukan OC → SC', areaKerja: 'Penelitian', perencanaan: 90, pelaksanaan: 5, persentase: 0.0556, status: 'Gagal' },
+                { no: 9, kpi: 'Riset Mitra Pengembangan Skill', target: 'Minimal 3 lembaga potensial per bulan', metodePengukuran: 'Laporan riset dan rekomendasi mitra', areaKerja: 'Penelitian', perencanaan: 2, pelaksanaan: 2, persentase: 1.0, status: 'Berhasil' },
+                { no: 10, kpi: 'Pengolahan data KPI', target: 'Seluruh data KPI tercatat dengan akurat', metodePengukuran: 'Data KPI yang direkapitulasi telah sesuai dengan kondisi lapangan', areaKerja: 'Penelitian', perencanaan: 'Selesai', pelaksanaan: 'Selesai', persentase: 1.0, status: 'Berhasil' },
+                { no: 11, kpi: 'Melakukan evaluasi KPI', target: 'Minimal 2 kali evaluasi fungsionaris per periode', metodePengukuran: 'Laporan hasil evaluasi', areaKerja: 'Penelitian', perencanaan: 'Selesai', pelaksanaan: 'Selesai', persentase: 1.0, status: 'Berhasil' },
+                { no: 12, kpi: 'Pengelolaan data KPI calon fungsionaris baru', target: 'Seluruh data KPI tercatat dengan akurat', metodePengukuran: 'Data KPI yang direkapitulasi telah sesuai dengan kondisi lapangan', areaKerja: 'Penelitian', perencanaan: 'Selesai', pelaksanaan: 'Selesai', persentase: 1.0, status: 'Berhasil' },
+                { no: 13, kpi: 'Perbandingan hasil proker dengan rencana awal', target: '100% jika semua terlaksana', metodePengukuran: 'Rekapitulasi laporan hasil proker dibandingkan dokumen', areaKerja: 'Penelitian', perencanaan: 100, pelaksanaan: 82, persentase: 0.82, status: 'Berhasil' }
+            ],
+            'Hubungan Masyarakat': [
+                { no: 1, kpi: 'Jumlah Peserta Seminar Nasional', target: 'Minimal 250 peserta', metodePengukuran: 'Menghitung jumlah pendaftar berdasarkan google form', perencanaan: 250, pelaksanaan: 285, persentase: 1.14, status: 'Berhasil', keterangan: 'Jumlah peserta Seminar Nasional tercapai dan melampaui target' },
+                { no: 2, kpi: 'Pendapatan dari Seminar Nasional', target: 'Minimal Rp1.000.000', metodePengukuran: 'Menghitung laba yang terkumpul berdasarkan laporan keuangan', perencanaan: 1000000, pelaksanaan: 763000, persentase: 0.763, status: 'Gagal', keterangan: 'Pendapatan belum mencapai target karena tingginya kebutuhan fasilitas' },
+                { no: 3, kpi: 'Yang datang ke booth stand BKM di Expo', target: 'Minimal 900 pengunjung per expo', metodePengukuran: 'Menghitung jumlah pengunjung berdasarkan daftar hadir', perencanaan: 900, pelaksanaan: 644, persentase: 0.7156, status: 'Gagal', keterangan: 'Kurang optimalnya daya tarik penampilan pada saat Expo' },
+                { no: 4, kpi: 'Jumlah fungsionaris yang mengikuti Outbound', target: 'Minimal 80% peserta menyatakan puas', metodePengukuran: 'Survei kepuasan peserta setelah kegiatan', perencanaan: 80, pelaksanaan: 61, persentase: 0.7625, status: 'Gagal', keterangan: 'Seluruh peserta puas namun metode pengukuran belum terstandar' },
+                { no: 5, kpi: 'Pendapatan dari Bunga Wisuda', target: 'Minimal Rp 1 juta per periode wisuda', metodePengukuran: 'Menghitung total dana yang terkumpul', perencanaan: 1000000, pelaksanaan: 710000, persentase: 0.71, status: 'Gagal', keterangan: 'Penyesuaian harga jual untuk mempercepat penjualan' },
+                { no: 6, kpi: 'Jumlah Dana Usaha', target: '10% dari Rp 56.657.400', metodePengukuran: 'Menghitung total dana yang terkumpul', perencanaan: 5665740, pelaksanaan: 1409500, persentase: 0.2488, status: 'Gagal', keterangan: 'Dana usaha melalui penjualan snack dan souvenir belum optimal' },
+                { no: 7, kpi: 'Jangkauan Media Sosial', target: 'Jika naik 100%, jika turun 0%', metodePengukuran: 'Menggunakan analitik media sosial untuk menghitung interaksi', perencanaan: 'Kenaikan Interaksi', pelaksanaan: 'Fluktuatif', persentase: 0.5, status: 'Gagal', keterangan: 'Interaksi media sosial mengalami fluktuasi' },
+                { no: 8, kpi: 'Sponsorship', target: 'Minimal 50 Sponsorship, 20 CSR', metodePengukuran: 'Menghitung jumlah pihak sponsor & CSR yang bekerjasama', perencanaan: 70, pelaksanaan: 29, persentase: 0.4143, status: 'Gagal', keterangan: 'Waktu perencanaan belum dilakukan jauh sebelum pelaksanaan' },
+                { no: 9, kpi: 'Mitra', target: 'Minimal 5', metodePengukuran: 'Menghitung jumlah pihak eksternal yang bekerjasama lebih dari 1 kali', perencanaan: 5, pelaksanaan: 4, persentase: 0.8, status: 'Berhasil', keterangan: 'Kerja sama dengan pihak eksternal terlaksana berkelanjutan' },
+                { no: 10, kpi: 'Pembuatan konten generator', target: 'Minimal 12 maka 100%', metodePengukuran: 'Menghitung jumlah konten yang akan dibuat tiap pelaksanaan', perencanaan: 12, pelaksanaan: 0, persentase: 0.0, status: 'Gagal', keterangan: 'Konten dibuat berdasarkan kreativitas panitia secara langsung' },
+                { no: 11, kpi: 'Pelaksanaan konten', target: 'Minimal 12 maka 100%', metodePengukuran: 'Menghitung jumlah konten yang sudah direncanakan', perencanaan: 12, pelaksanaan: 6, persentase: 0.5, status: 'Gagal', keterangan: 'Capaian bervariasi per triwulan, Triwulan III dan IV memenuhi' }
+            ],
+            'Kesehatan': [
+                { no: 1, kpi: 'Jumlah Peserta Donor Darah', target: 'Jika Terpenuhi 100%', metodePengukuran: 'Menghitung jumlah peserta berdasarkan laporan kegiatan', perencanaan: 150, pelaksanaan: 126, persentase: 0.84, status: 'Gagal', keterangan: 'Publikasi kegiatan donor darah belum dilakukan secara maksimal dan merata' },
+                { no: 2, kpi: 'Jumlah Peserta Donor Darah (Kegiatan 2)', target: 'Jika Terpenuhi 100%', metodePengukuran: 'Menghitung jumlah peserta berdasarkan laporan kegiatan', perencanaan: 150, pelaksanaan: 76, persentase: 0.5067, status: 'Gagal', keterangan: 'Pelaksanaan MoU oleh pihak kolaborator tidak berjalan baik' },
+                { no: 3, kpi: 'Jumlah Penerima Manfaat Kesehatan Masyarakat', target: 'Jika Terpenuhi 100%', metodePengukuran: 'Menghitung jumlah penerima manfaat berdasarkan laporan kegiatan', perencanaan: 116, pelaksanaan: 114, persentase: 0.9828, status: 'Berhasil', keterangan: 'Terdapat sponsor yang sulit dihubungi dan beberapa sponsor dalam bentuk barang' },
+                { no: 4, kpi: 'Kesiapan Tim Pertolongan Pertama', target: 'Jika Terpenuhi 100%', metodePengukuran: 'Audit kesiapan Tim Pertolongan Pertama sebelum kegiatan', perencanaan: 67, pelaksanaan: 15, persentase: 0.2239, status: 'Gagal', keterangan: 'Rendahnya partisipasi anggota karena kurangnya penguasaan materi' },
+                { no: 5, kpi: 'Keaktifan kegiatan Tim Kesehatan', target: 'Minimal 12 MoU dalam 1 periode', metodePengukuran: 'Membagi jumlah kegiatan dengan partisipasi Tim Kesehatan', perencanaan: 12, pelaksanaan: 26, persentase: 2.1667, status: 'Berhasil', keterangan: 'Pelaksanaan kegiatan tim kesehatan lebih banyak dari target' },
+                { no: 6, kpi: 'Kelengkapan List Obat', target: '100% obat terdeskripsi dan fungsional', metodePengukuran: 'Audit List Obat untuk memastikan kelengkapan dan kondisi', perencanaan: 8, pelaksanaan: 7, persentase: 0.875, status: 'Gagal', keterangan: 'Terdapat jadwal pemeriksaan list obat yang tidak terlaksana' },
+                { no: 7, kpi: 'Riset isu kesehatan yang sedang trend', target: 'Minimal mendapatkan 2 isu yang dibahas', metodePengukuran: 'Menghitung jumlah isu yang didapatkan setelah dilakukannya riset', perencanaan: 2, pelaksanaan: 2, persentase: 1.0, status: 'Berhasil', keterangan: 'Terdapat perlakuan riset trend permasalahan kesehatan yang berpotensi' },
+                { no: 8, kpi: 'Membuat konten edukasi kesehatan', target: 'Minimal mengangkat 2 isu dari riset', metodePengukuran: 'Menghitung jumlah isu yang diangkat menjadi konten', perencanaan: 2, pelaksanaan: 2, persentase: 1.0, status: 'Berhasil', keterangan: 'Koordinasi dengan departemen humas berjalan baik' }
+            ],
+            'Pengabdian Masyarakat': [
+                { no: 1, kpi: 'Jumlah Peserta Bhakti Mahasiswa - Fungsionaris SC', target: '20 peserta', metodePengukuran: 'Menghitung jumlah peserta berdasarkan absensi kegiatan', perencanaan: 20, pelaksanaan: 18, persentase: 0.9, status: 'Berhasil' },
+                { no: 2, kpi: 'Jumlah Peserta Bhakti Mahasiswa - Fungsionaris OC', target: '40 peserta', metodePengukuran: 'Menghitung jumlah peserta berdasarkan absensi kegiatan', perencanaan: 40, pelaksanaan: 44, persentase: 1.1, status: 'Berhasil' },
+                { no: 3, kpi: 'Jumlah Peserta Bhakti Mahasiswa - Fungsionaris Baru', target: '10 peserta', metodePengukuran: 'Menghitung jumlah peserta berdasarkan absensi kegiatan', perencanaan: 10, pelaksanaan: 7, persentase: 0.7, status: 'Gagal' },
+                { no: 4, kpi: 'Jumlah Peserta Bhakti Mahasiswa - Volunteer', target: '15 peserta', metodePengukuran: 'Menghitung jumlah peserta berdasarkan absensi kegiatan', perencanaan: 15, pelaksanaan: 18, persentase: 1.2, status: 'Berhasil' },
+                { no: 5, kpi: 'Jumlah Peserta Bhakti Mahasiswa - Warga Desa', target: '20 peserta', metodePengukuran: 'Menghitung jumlah peserta berdasarkan absensi kegiatan', perencanaan: 20, pelaksanaan: 47, persentase: 2.35, status: 'Berhasil' },
+                { no: 6, kpi: 'Jumlah masyarakat yang mengikuti Program Kerja Bakti Sosial', target: '40 warga Desa Girimulyo', metodePengukuran: 'Menghitung jumlah peserta berdasarkan absensi kegiatan', perencanaan: 40, pelaksanaan: 17, persentase: 0.425, status: 'Gagal', keterangan: 'Informasi mendadak dari warga Dusun Pagutan yang tidak bisa hadir' },
+                { no: 7, kpi: 'Jumlah donasi yang disalurkan dalam Program Kerja Sosial Ramadhan', target: 'Jika lebih dari 14 Juta maka 100%', metodePengukuran: 'Menghitung jumlah penerima manfaat berdasarkan laporan kegiatan', perencanaan: 14000000, pelaksanaan: 12828700, persentase: 0.9163, status: 'Berhasil' },
+                { no: 8, kpi: 'Membuat campaign untuk kegiatan galang dana Sosial Ramadhan', target: 'Jika 5 campaign maka 100%', metodePengukuran: 'Menghitung jumlah campaign yang terealisasi', perencanaan: 5, pelaksanaan: 2, persentase: 0.4, status: 'Gagal', keterangan: 'Hanya 2 konsep campaign yang direalisasikan' },
+                { no: 9, kpi: 'Membuat campaign untuk kegiatan galang dana PBK', target: 'Jika 5 campaign maka 100%', metodePengukuran: 'Menghitung jumlah campaign yang terealisasi', perencanaan: 5, pelaksanaan: 2, persentase: 0.4, status: 'Gagal', keterangan: 'Hanya 2 konsep campaign yang direalisasikan' },
+                { no: 10, kpi: 'Pencapaian target rancangan dana Sosram', target: 'Jika tercapai 100%', metodePengukuran: 'Membandingkan jumlah dana yang didapat dengan target', perencanaan: 14795100, pelaksanaan: 12828700, persentase: 0.8671, status: 'Berhasil' },
+                { no: 11, kpi: 'Pencapaian target rancangan dana PBM', target: 'Jika tercapai 100%', metodePengukuran: 'Membandingkan jumlah dana yang didapat dengan target', perencanaan: 31857000, pelaksanaan: 18715000, persentase: 0.5875, status: 'Gagal' },
+                { no: 12, kpi: 'Pencapaian target rancangan dana Baksos', target: 'Jika tercapai 100%', metodePengukuran: 'Membandingkan jumlah dana yang didapat dengan target', perencanaan: 5687500, pelaksanaan: 6511720, persentase: 1.1449, status: 'Berhasil' },
+                { no: 13, kpi: 'Konten edukasi SDGs', target: 'Minimal 3 konten per bulan', metodePengukuran: 'Menghitung jumlah konten yang dipublikasikan', perencanaan: 'Minimal 3', pelaksanaan: 1, persentase: 0.027, status: 'Gagal', keterangan: 'KPI belum tercapai karena penyesuaian baru dilaksanakan di akhir periode' }
+            ],
+            'Rumah Tangga': [
+                { no: 1, kpi: 'Tingkat Partisipasi Diklat Open Recruitment', target: 'Minimal 70% calon anggota mengikuti diklat', metodePengukuran: 'Membagi jumlah peserta diklat dengan total calon anggota', perencanaan: 148, pelaksanaan: 114, persentase: 0.7703, status: 'Berhasil', keterangan: 'Partisipasi calon anggota mencapai 77% dari total pendaftar' },
+                { no: 2, kpi: 'Jumlah targetan dana Sponsorship untuk Dies Natalis', target: 'Minimal 90% dari dana targetan', metodePengukuran: 'Membagi jumlah dana yang didapatkan dengan total targetan', perencanaan: 1600000, pelaksanaan: 1050000, persentase: 0.6563, status: 'Gagal', keterangan: 'Dana sponsorship 66% dari target, dipengaruhi keterbatasan respons sponsor' },
+                { no: 3, kpi: 'Jumlah targetan iuran fungsionaris OC untuk Dies Natalis', target: 'Minimal 90% dari dana targetan', metodePengukuran: 'Membagi jumlah dana yang didapatkan dengan total targetan', perencanaan: 700000, pelaksanaan: 797000, persentase: 1.1386, status: 'Berhasil', keterangan: 'Pengumpulan iuran fungsionaris OC melampaui target 114%' },
+                { no: 4, kpi: 'Jumlah targetan iuran fungsionaris SC untuk Dies Natalis', target: 'Minimal 90% dari dana targetan', metodePengukuran: 'Membagi jumlah dana yang didapatkan dengan total targetan', perencanaan: 1820000, pelaksanaan: 2250000, persentase: 1.2363, status: 'Berhasil', keterangan: 'Iuran fungsionaris SC berhasil melampaui target 124%' },
+                { no: 5, kpi: 'Jumlah targetan komunitas yang datang pada saat hari H Dies Natalis', target: 'Minimal 95% dari targetan kehadiran', metodePengukuran: 'Membagi jumlah kedatangan KSR dengan total targetan', perencanaan: 20, pelaksanaan: 13, persentase: 0.65, status: 'Gagal', keterangan: 'Jumlah komunitas yang hadir 65% dari target, kendala internal dari beberapa KSR' },
+                { no: 6, kpi: 'Keakuratan Struktur Organisasi', target: '100% data akurat dan diperbarui', metodePengukuran: 'Audit Struktur Organisasi untuk memastikan keakuratan', perencanaan: 240, pelaksanaan: 239, persentase: 0.9958, status: 'Gagal', keterangan: 'Hampir sepenuhnya terpenuhi, masih ditemukan satu kesalahan penulisan nama' },
+                { no: 7, kpi: 'Distribusi Kartu Tanda Anggota', target: '100% anggota menerima kartu tanda anggota', metodePengukuran: 'Membagi jumlah anggota yang menerima kartu tepat waktu', perencanaan: 124, pelaksanaan: 110, persentase: 0.8871, status: 'Gagal', keterangan: 'Distribusi Kartu Tanda Anggota mencapai 89%, beberapa tidak melakukan pemesanan' },
+                { no: 8, kpi: 'Ketersediaan Pakaian Dinas Lapang', target: '100% anggota menerima pakaian dinas lapang', metodePengukuran: 'Audit distribusi Pakaian Dinas Lapang', perencanaan: 124, pelaksanaan: 110, persentase: 0.8871, status: 'Gagal', keterangan: 'Pendistribusian PDL 89%, sebagian fungsionaris tidak berkenan memesan' },
+                { no: 9, kpi: 'Kelengkapan, kelayakan data list Inventaris', target: '100% inventaris terdata', metodePengukuran: 'Audit inventaris sekretariat untuk memastikan kelengkapan', perencanaan: 656, pelaksanaan: 600, persentase: 0.9146, status: 'Berhasil' },
+                { no: 10, kpi: 'Membuat dan mendata KPI individu untuk calon fungsionaris baru', target: '100% jika sesuai dengan peserta diklat', metodePengukuran: 'Menghitung jumlah KPI dan disesuaikan dengan jumlah calon fungsionaris', perencanaan: 113, pelaksanaan: 113, persentase: 1.0, status: 'Berhasil', keterangan: 'Seluruh calon fungsionaris baru telah memiliki dan terdokumentasi KPI individu' },
+                { no: 11, kpi: 'Membantu koordinasi Internal dengan Koordinator Penelitian dan Pengembangan', target: '100% koordinasi terlaksana', metodePengukuran: 'Ketepatan waktu pelaksanaan program kerja/kegiatan', perencanaan: 100, pelaksanaan: 100, persentase: 1.0, status: 'Berhasil', keterangan: 'Koordinasi terlaksana sepenuhnya sesuai perencanaan' }
+            ]
+        };
+
+        // Global state
+        let kpiData = JSON.parse(JSON.stringify(initialData));
+        let selectedDept = 'Sekretaris Umum';
+        let editingKPIIndex = null;
+        let charts = {};
+        let sidebarOpen = true;
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const deptList = document.getElementById('deptList');
+        const addDeptBtn = document.getElementById('addDeptBtn');
+        const addKPIBtn = document.getElementById('addKPIBtn');
+        const addDeptForm = document.getElementById('addDeptForm');
+        const addKPIForm = document.getElementById('addKPIForm');
+        const saveDeptBtn = document.getElementById('saveDeptBtn');
+        const cancelDeptBtn = document.getElementById('cancelDeptBtn');
+        const saveKPIBtn = document.getElementById('saveKPIBtn');
+        const cancelKPIBtn = document.getElementById('cancelKPIBtn');
+        const deleteDeptBtn = document.getElementById('deleteDeptBtn');
+        const deptTableTitle = document.getElementById('deptTableTitle');
+        const kpiTableBody = document.getElementById('kpiTableBody');
+        const notesContainer = document.getElementById('notesContainer');
+        const deptNameInput = document.getElementById('deptNameInput');
+        const kpiNameInput = document.getElementById('kpiNameInput');
+        const kpiTargetInput = document.getElementById('kpiTargetInput');
+        const kpiMethodInput = document.getElementById('kpiMethodInput');
+        const kpiPercentageInput = document.getElementById('kpiPercentageInput');
+        const kpiNoteInput = document.getElementById('kpiNoteInput');
+        const kpiFormTitle = document.getElementById('kpiFormTitle');
+        const avgAchievementEl = document.getElementById('avgAchievement');
+        const totalKPIEl = document.getElementById('totalKPI');
+        const successKPIEl = document.getElementById('successKPI');
+        const failedKPIEl = document.getElementById('failedKPI');
+        const excelUpload = document.getElementById('excelUpload');
+        const downloadExcelBtn = document.getElementById('downloadExcelBtn');
+        const uploadModal = document.getElementById('uploadModal');
+        const excelFileInput = document.getElementById('excelFileInput');
+        const processExcelBtn = document.getElementById('processExcelBtn');
+        const closeUploadModal = document.getElementById('closeUploadModal');
+
+        // Initialize dashboard
+        function initDashboard() {
+            renderDepartmentList();
+            renderKPIStats();
+            renderKPIForSelectedDept();
+            initCharts();
+            setupEventListeners();
+        }
+
+        // Render department list
+        function renderDepartmentList() {
+            deptList.innerHTML = '';
+            
+            Object.keys(kpiData).forEach(dept => {
+                const button = document.createElement('button');
+                button.className = 'dept-btn';
+                if (dept === selectedDept) {
+                    button.classList.add('active');
+                }
+                
+                button.innerHTML = `
+                    ${dept}
+                    <i class="fas fa-chevron-right"></i>
+                `;
+                
+                button.addEventListener('click', () => {
+                    selectedDept = dept;
+                    deptTableTitle.textContent = `Performa ${dept}`;
+                    renderDepartmentList();
+                    renderKPIForSelectedDept();
+                    updateDeptChart();
+                });
+                
+                deptList.appendChild(button);
+            });
+        }
+
+        // Calculate overall statistics
+        function calculateStats() {
+            let totalKPI = 0;
+            let totalSuccess = 0;
+            let totalFailed = 0;
+            let totalPercentage = 0;
+            
+            Object.values(kpiData).forEach(deptKPIs => {
+                deptKPIs.forEach(kpi => {
+                    totalKPI++;
+                    totalPercentage += kpi.persentase;
+                    if (kpi.status === 'Berhasil') {
+                        totalSuccess++;
+                    } else {
+                        totalFailed++;
+                    }
+                });
+            });
+            
+            const avgPercentage = totalKPI > 0 ? (totalPercentage / totalKPI) * 100 : 0;
+            
+            return {
+                totalKPI,
+                totalSuccess,
+                totalFailed,
+                avgPercentage
+            };
+        }
+
+        // Render KPI statistics
+        function renderKPIStats() {
+            const stats = calculateStats();
+            
+            avgAchievementEl.textContent = `${stats.avgPercentage.toFixed(1)}%`;
+            totalKPIEl.textContent = stats.totalKPI;
+            successKPIEl.textContent = stats.totalSuccess;
+            failedKPIEl.textContent = stats.totalFailed;
+        }
+
+        // Render KPI table for selected department
+        function renderKPIForSelectedDept() {
+            const kpis = kpiData[selectedDept] || [];
+            kpiTableBody.innerHTML = '';
+            notesContainer.innerHTML = '<h4 class="notes-title">Keterangan Detail:</h4>';
+            
+            if (kpis.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td colspan="9" style="text-align: center; padding: 2rem; color: var(--gray-500)">
+                        Belum ada data KPI untuk departemen ini
+                    </td>
+                `;
+                kpiTableBody.appendChild(row);
+                return;
+            }
+            
+            kpis.forEach((kpi, index) => {
+                const row = document.createElement('tr');
+                
+                // Determine planning and execution values
+                const planning = kpi.perencanaan !== undefined ? kpi.perencanaan : '-';
+                const execution = kpi.pelaksanaan !== undefined ? kpi.pelaksanaan : '-';
+                
+                // Create progress bar
+                const percentage = (kpi.persentase * 100).toFixed(1);
+                const progressBarColor = kpi.status === 'Berhasil' ? 'var(--success)' : 'var(--danger)';
+                
+                row.innerHTML = `
+                    <td>${kpi.no}</td>
+                    <td>${kpi.kpi}</td>
+                    <td>${kpi.target}</td>
+                    <td>${kpi.metodePengukuran || '-'}</td>
+                    <td style="text-align: center;">${planning}</td>
+                    <td style="text-align: center;">${execution}</td>
+                    <td>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%; background: ${progressBarColor}">
+                                ${percentage}%
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <span class="status-badge ${kpi.status === 'Gagal' ? 'failed' : ''}">
+                            ${kpi.status}
+                        </span>
+                    </td>
+                    <td style="text-align: center;">
+                        <div class="action-icons">
+                            <button class="action-icon icon-edit" data-index="${index}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-icon icon-delete" data-index="${index}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                kpiTableBody.appendChild(row);
+                
+                // Add note if exists
+                if (kpi.keterangan) {
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = `note-item ${kpi.status === 'Gagal' ? 'failed' : ''}`;
+                    noteDiv.innerHTML = `
+                        <div class="note-kpi">KPI ${kpi.no}: ${kpi.kpi}</div>
+                        <p class="note-text">${kpi.keterangan}</p>
+                    `;
+                    notesContainer.appendChild(noteDiv);
+                }
+            });
+            
+            // Add event listeners for edit and delete buttons
+            document.querySelectorAll('.icon-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    editKPI(index);
+                });
+            });
+            
+            document.querySelectorAll('.icon-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.currentTarget.dataset.index);
+                    deleteKPI(index);
+                });
+            });
+        }
+
+        // Initialize charts
+        function initCharts() {
+            // Overall performance chart
+            const overallCtx = document.getElementById('overallChart').getContext('2d');
+            const deptPerformanceData = getDepartmentPerformanceData();
+            
+            charts.overall = new Chart(overallCtx, {
+                type: 'bar',
+                data: {
+                    labels: deptPerformanceData.map(d => d.name),
+                    datasets: [{
+                        label: 'Persentase Pencapaian',
+                        data: deptPerformanceData.map(d => d.persentase),
+                        backgroundColor: 'var(--secondary-blue)',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Status chart (pie)
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            const stats = calculateStats();
+            
+            charts.status = new Chart(statusCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Berhasil', 'Gagal'],
+                    datasets: [{
+                        data: [stats.totalSuccess, stats.totalFailed],
+                        backgroundColor: ['var(--success)', 'var(--danger)'],
+                        borderWidth: 2,
+                        borderColor: 'white'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Distribution chart (line)
+            const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+            
+            charts.distribution = new Chart(distributionCtx, {
+                type: 'line',
+                data: {
+                    labels: deptPerformanceData.map(d => d.name),
+                    datasets: [{
+                        label: 'Persentase Pencapaian',
+                        data: deptPerformanceData.map(d => d.persentase),
+                        borderColor: 'var(--secondary-blue)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Department chart
+            updateDeptChart();
+        }
+
+        // Get department performance data
+        function getDepartmentPerformanceData() {
+            return Object.keys(kpiData).map(dept => {
+                const deptKPIs = kpiData[dept];
+                if (deptKPIs.length === 0) return null;
+                
+                const avgPercentage = deptKPIs.reduce((sum, kpi) => sum + kpi.persentase, 0) / deptKPIs.length;
+                
+                // Shorten department names for display
+                let shortName = dept;
+                if (dept === 'Pengabdian Masyarakat') shortName = 'Pengab';
+                if (dept === 'Hubungan Masyarakat') shortName = 'Humas';
+                if (dept === 'Sekretaris Umum') shortName = 'Sekum';
+                
+                return {
+                    name: shortName,
+                    persentase: parseFloat((avgPercentage * 100).toFixed(1))
+                };
+            }).filter(item => item !== null);
+        }
+
+        // Update department chart
+        function updateDeptChart() {
+            const deptCtx = document.getElementById('deptChart').getContext('2d');
+            const deptKPIs = kpiData[selectedDept] || [];
+            
+            // Destroy existing chart if it exists
+            if (charts.dept) {
+                charts.dept.destroy();
+            }
+            
+            if (deptKPIs.length === 0) {
+                // Show message if no data
+                document.getElementById('deptChart').parentElement.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--gray-500)">
+                        Tidak ada data KPI untuk departemen ini
+                    </div>
+                `;
+                return;
+            }
+            
+            // Create chart data
+            const chartData = deptKPIs.map((kpi, index) => ({
+                name: `KPI ${index + 1}`,
+                persentase: (kpi.persentase * 100).toFixed(1),
+                color: kpi.status === 'Berhasil' ? 'var(--success)' : 'var(--danger)'
+            }));
+            
+            charts.dept = new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: chartData.map(d => d.name),
+                    datasets: [{
+                        label: 'Persentase Pencapaian',
+                        data: chartData.map(d => d.persentase),
+                        backgroundColor: chartData.map(d => d.color),
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Add new department
+        function addDepartment() {
+            const deptName = deptNameInput.value.trim();
+            
+            if (!deptName) {
+                alert('Nama departemen tidak boleh kosong');
+                return;
+            }
+            
+            if (kpiData[deptName]) {
+                alert('Departemen dengan nama tersebut sudah ada');
+                return;
+            }
+            
+            // Add new department with empty KPI list
+            kpiData[deptName] = [];
+            
+            // Update UI
+            renderDepartmentList();
+            renderKPIStats();
+            updateOverallCharts();
+            
+            // Clear form and hide
+            deptNameInput.value = '';
+            addDeptForm.style.display = 'none';
+            
+            // Select the new department
+            selectedDept = deptName;
+            deptTableTitle.textContent = `Performa ${deptName}`;
+            renderDepartmentList();
+            renderKPIForSelectedDept();
+            updateDeptChart();
+        }
+
+        // Delete department
+        function deleteDepartment() {
+            if (Object.keys(kpiData).length <= 1) {
+                alert('Tidak dapat menghapus satu-satunya departemen');
+                return;
+            }
+            
+            if (!confirm(`Hapus departemen "${selectedDept}"?`)) {
+                return;
+            }
+            
+            // Delete department
+            delete kpiData[selectedDept];
+            
+            // Select another department
+            const deptNames = Object.keys(kpiData);
+            selectedDept = deptNames[0];
+            deptTableTitle.textContent = `Performa ${selectedDept}`;
+            
+            // Update UI
+            renderDepartmentList();
+            renderKPIStats();
+            renderKPIForSelectedDept();
+            updateOverallCharts();
+            updateDeptChart();
+        }
+
+        // Add new KPI
+        function addKPI() {
+            const kpiName = kpiNameInput.value.trim();
+            const target = kpiTargetInput.value.trim();
+            const method = kpiMethodInput.value.trim();
+            const percentage = parseFloat(kpiPercentageInput.value);
+            const note = kpiNoteInput.value.trim();
+            
+            if (!kpiName || !target || !method || isNaN(percentage)) {
+                alert('Harap isi semua field yang wajib diisi');
+                return;
+            }
+            
+            if (percentage < 0 || percentage > 100) {
+                alert('Persentase harus antara 0 dan 100');
+                return;
+            }
+            
+            const newKPI = {
+                no: (kpiData[selectedDept].length || 0) + 1,
+                kpi: kpiName,
+                target: target,
+                metodePengukuran: method,
+                persentase: percentage / 100,
+                status: percentage >= 80 ? 'Berhasil' : 'Gagal',
+                keterangan: note || undefined
+            };
+            
+            // Add to department
+            if (!kpiData[selectedDept]) {
+                kpiData[selectedDept] = [];
+            }
+            
+            kpiData[selectedDept].push(newKPI);
+            
+            // Update UI
+            renderKPIForSelectedDept();
+            renderKPIStats();
+            updateOverallCharts();
+            updateDeptChart();
+            
+            // Clear form and hide
+            resetKPIForm();
+            addKPIForm.style.display = 'none';
+        }
+
+        // Edit KPI
+        function editKPI(index) {
+            const kpi = kpiData[selectedDept][index];
+            
+            // Fill form with KPI data
+            kpiNameInput.value = kpi.kpi;
+            kpiTargetInput.value = kpi.target;
+            kpiMethodInput.value = kpi.metodePengukuran || '';
+            kpiPercentageInput.value = (kpi.persentase * 100).toFixed(1);
+            kpiNoteInput.value = kpi.keterangan || '';
+            
+            // Update form title and button
+            kpiFormTitle.textContent = 'Edit KPI';
+            saveKPIBtn.innerHTML = '<i class="fas fa-save"></i> Update';
+            
+            // Set editing index
+            editingKPIIndex = index;
+            
+            // Show form
+            addKPIForm.style.display = 'block';
+            addKPIForm.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Update KPI
+        function updateKPI() {
+            const kpiName = kpiNameInput.value.trim();
+            const target = kpiTargetInput.value.trim();
+            const method = kpiMethodInput.value.trim();
+            const percentage = parseFloat(kpiPercentageInput.value);
+            const note = kpiNoteInput.value.trim();
+            
+            if (!kpiName || !target || !method || isNaN(percentage)) {
+                alert('Harap isi semua field yang wajib diisi');
+                return;
+            }
+            
+            if (percentage < 0 || percentage > 100) {
+                alert('Persentase harus antara 0 dan 100');
+                return;
+            }
+            
+            // Update KPI
+            kpiData[selectedDept][editingKPIIndex] = {
+                ...kpiData[selectedDept][editingKPIIndex],
+                kpi: kpiName,
+                target: target,
+                metodePengukuran: method,
+                persentase: percentage / 100,
+                status: percentage >= 80 ? 'Berhasil' : 'Gagal',
+                keterangan: note || undefined
+            };
+            
+            // Update UI
+            renderKPIForSelectedDept();
+            renderKPIStats();
+            updateOverallCharts();
+            updateDeptChart();
+            
+            // Reset form and hide
+            resetKPIForm();
+            addKPIForm.style.display = 'none';
+        }
+
+        // Delete KPI
+        function deleteKPI(index) {
+            if (!confirm('Hapus KPI ini?')) {
+                return;
+            }
+            
+            // Remove KPI
+            kpiData[selectedDept].splice(index, 1);
+            
+            // Update KPI numbers
+            kpiData[selectedDept].forEach((kpi, i) => {
+                kpi.no = i + 1;
+            });
+            
+            // Update UI
+            renderKPIForSelectedDept();
+            renderKPIStats();
+            updateOverallCharts();
+            updateDeptChart();
+        }
+
+        // Reset KPI form
+        function resetKPIForm() {
+            kpiNameInput.value = '';
+            kpiTargetInput.value = '';
+            kpiMethodInput.value = '';
+            kpiPercentageInput.value = '';
+            kpiNoteInput.value = '';
+            kpiFormTitle.textContent = 'Tambah KPI Baru';
+            saveKPIBtn.innerHTML = '<i class="fas fa-save"></i> Simpan';
+            editingKPIIndex = null;
+        }
+
+        // Update overall charts
+        function updateOverallCharts() {
+            const deptPerformanceData = getDepartmentPerformanceData();
+            const stats = calculateStats();
+            
+            // Update overall chart
+            charts.overall.data.labels = deptPerformanceData.map(d => d.name);
+            charts.overall.data.datasets[0].data = deptPerformanceData.map(d => d.persentase);
+            charts.overall.update();
+            
+            // Update status chart
+            charts.status.data.datasets[0].data = [stats.totalSuccess, stats.totalFailed];
+            charts.status.update();
+            
+            // Update distribution chart
+            charts.distribution.data.labels = deptPerformanceData.map(d => d.name);
+            charts.distribution.data.datasets[0].data = deptPerformanceData.map(d => d.persentase);
+            charts.distribution.update();
+        }
+
+        // Render full dashboard (used after data upload)
+        function renderDashboard() {
+            renderDepartmentList();
+            renderKPIStats();
+            renderKPIForSelectedDept();
+            updateOverallCharts();
+            updateDeptChart();
+        }
+
+        // Download Excel function
+        function downloadExcel() {
+            try {
+                const wb = XLSX.utils.book_new();
+                
+                // Process each department as a separate sheet
+                Object.keys(kpiData).forEach(deptName => {
+                    const kpis = kpiData[deptName];
+                    
+                    if (kpis.length === 0) return;
+                    
+                    // Prepare data for Excel
+                    const excelData = kpis.map(kpi => ({
+                        'No': kpi.no,
+                        'Key Performance Indicators': kpi.kpi,
+                        'Target': kpi.target,
+                        'Metode Pengukuran': kpi.metodePengukuran || kpi.metode || '',
+                        'Area Kerja': kpi.areaKerja || '',
+                        'Perencanaan': kpi.perencanaan,
+                        'Pelaksanaan': kpi.pelaksanaan,
+                        'Persentase': kpi.persentase,
+                        'Status': kpi.status,
+                        'Keterangan': kpi.keterangan || ''
+                    }));
+                    
+                    // Create worksheet
+                    const ws = XLSX.utils.json_to_sheet(excelData);
+                    
+                    // Add worksheet to workbook
+                    // Limit sheet name to 31 characters (Excel limit)
+                    const sheetName = deptName.substring(0, 31);
+                    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+                });
+                
+                // Generate filename with date
+                const date = new Date().toISOString().split('T')[0];
+                const filename = `KPI_UKM_BKM_Export_${date}.xlsx`;
+                
+                // Download file
+                XLSX.writeFile(wb, filename);
+                
+                alert(`✅ Data berhasil didownload!\n\nFile: ${filename}\nTotal Departemen: ${Object.keys(kpiData).length}`);
+                
+            } catch (error) {
+                console.error('Error creating Excel file:', error);
+                alert('❌ Error saat membuat file Excel: ' + error.message);
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Menu toggle
+            menuToggle.addEventListener('click', () => {
+                sidebarOpen = !sidebarOpen;
+                if (sidebarOpen) {
+                    sidebar.classList.remove('closed');
+                } else {
+                    sidebar.classList.add('closed');
+                }
+            });
+
+            // Add department button
+            addDeptBtn.addEventListener('click', () => {
+                addDeptForm.style.display = 'block';
+                addDeptForm.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // Add KPI button
+            addKPIBtn.addEventListener('click', () => {
+                resetKPIForm();
+                addKPIForm.style.display = 'block';
+                addKPIForm.scrollIntoView({ behavior: 'smooth' });
+            });
+
+            // Save department button
+            saveDeptBtn.addEventListener('click', addDepartment);
+
+            // Cancel department button
+            cancelDeptBtn.addEventListener('click', () => {
+                addDeptForm.style.display = 'none';
+                deptNameInput.value = '';
+            });
+
+            // Save KPI button
+            saveKPIBtn.addEventListener('click', () => {
+                if (editingKPIIndex !== null) {
+                    updateKPI();
+                } else {
+                    addKPI();
+                }
+            });
+
+            // Cancel KPI button
+            cancelKPIBtn.addEventListener('click', () => {
+                addKPIForm.style.display = 'none';
+                resetKPIForm();
+            });
+
+            // Delete department button
+            deleteDeptBtn.addEventListener('click', deleteDepartment);
+
+            // Download Excel button
+            downloadExcelBtn.addEventListener('click', downloadExcel);
+
+            // Excel upload
+            excelUpload.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    uploadModal.style.display = 'flex';
+                }
+            });
+
+            // Process Excel button
+            processExcelBtn.addEventListener('click', () => {
+                if (!excelFileInput.files.length) {
+                    alert('❌ Pilih file Excel terlebih dahulu');
+                    return;
+                }
+                
+                const file = excelFileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        
+                        // Clear existing data
+                        kpiData = {};
+                        
+                        // Process each sheet as a department
+                        workbook.SheetNames.forEach(sheetName => {
+                            const worksheet = workbook.Sheets[sheetName];
+                            const jsonData = XLSX.utils.sheet_to_json(worksheet, {raw: false, defval: ''});
+                            
+                            // Map sheet name to full department name
+                            let deptName = sheetName;
+                            if (sheetName === 'SEKUM') deptName = 'Sekretaris Umum';
+                            if (sheetName === 'LITBANG') deptName = 'Penelitian & Pengembangan';
+                            if (sheetName === 'HUMAS') deptName = 'Hubungan Masyarakat';
+                            if (sheetName === 'KESEHATAN') deptName = 'Kesehatan';
+                            if (sheetName === 'PENGAB') deptName = 'Pengabdian Masyarakat';
+                            if (sheetName === 'RT') deptName = 'Rumah Tangga';
+                            
+                            // Initialize department array
+                            kpiData[deptName] = [];
+                            
+                            // Add each row as KPI
+                            let kpiNo = 1;
+                            jsonData.forEach(row => {
+                                const kpi = row['Key Performance Indicators'] || row['KPI'];
+                                if (kpi && kpi !== '' && typeof kpi === 'string' && kpi.length > 3) {
+                                    const persentase = parseFloat(row['Persentase']) || 0;
+                                    const status = persentase >= 0.8 ? 'Berhasil' : 'Gagal';
+                                    
+                                    kpiData[deptName].push({
+                                        no: kpiNo++,
+                                        kpi: kpi,
+                                        target: row['Target'] || '',
+                                        metodePengukuran: row['Metode pengukuran'] || row['Metode Pengukuran'] || '',
+                                        areaKerja: row['Area Kerja'] || '',
+                                        perencanaan: row['GTS / Perencanaan'] || row['Perencanaan'] || '',
+                                        pelaksanaan: row['Pelaksanaan'] || '',
+                                        persentase: persentase,
+                                        status: status,
+                                        keterangan: row['Keterangan'] || ''
+                                    });
+                                }
+                            });
+                        });
+                        
+                        // Save to localStorage
+                        localStorage.setItem('kpiData', JSON.stringify(kpiData));
+                        
+                        // Reset to first department
+                        selectedDept = Object.keys(kpiData)[0] || 'Sekretaris Umum';
+                        
+                        // Update display
+                        renderDashboard();
+                        
+                        // Reset and close modal
+                        excelFileInput.value = '';
+                        uploadModal.style.display = 'none';
+                        
+                        const totalKPI = Object.values(kpiData).reduce((sum, dept) => sum + dept.length, 0);
+                        alert(`✅ Data berhasil diupload!\n\nTotal KPI: ${totalKPI}\nDepartemen: ${Object.keys(kpiData).join(', ')}`);
+                        
+                    } catch (error) {
+                        console.error('Error reading Excel file:', error);
+                        alert('❌ Error membaca file Excel: ' + error.message);
+                    }
+                };
+                
+                reader.onerror = function() {
+                    alert('❌ Error membaca file. Pastikan file adalah format Excel yang valid (.xlsx atau .xls)');
+                };
+                
+                reader.readAsArrayBuffer(file);
+            });
+
+            // Close upload modal
+            closeUploadModal.addEventListener('click', () => {
+                uploadModal.style.display = 'none';
+                excelFileInput.value = '';
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === uploadModal) {
+                    uploadModal.style.display = 'none';
+                    excelFileInput.value = '';
+                }
+            });
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
